@@ -1,6 +1,9 @@
 pandas
 sklearn
+hdbscan
+statsmodels
 seaborn
 ipykernel
 kaggle
 matplotlib
+plotnine

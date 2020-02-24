@@ -39,8 +39,8 @@ df = savedf
 
 
 
-cat_cols_minus = [c for c in cat_cols if c not in ["clusterId","hospital_death", "encounter_id" , "hospital_id" , "patient_id" , "icu_id"]]
-cat_cols_minus_useless = [c for c in cat_cols if c not in ["clusterId", "encounter_id" , "hospital_id" , "patient_id" , "icu_id"]]
+cat_cols_minus = [c for c in cat_cols if c not in ["clusterId","hospital_death", "encounter_id" , "hospital_id" , "patient_id"]]
+cat_cols_minus_useless = [c for c in cat_cols if c not in ["clusterId", "encounter_id" , "hospital_id" , "patient_id"]]
 #df = pd.get_dummies(df , columns= cat_cols_minus , drop_first=True )
 
 
@@ -97,17 +97,17 @@ ndf = pcadf
 #(ggplot(plotdf , aes(x = "nc" , y="ratio")) + geom_line())
 
 
-from sklearn.preprocessing import LabelEncoder
+#from sklearn.preprocessing import LabelEncoder
 
 
 cat_cols_now = getCategorialColumns(ndf)
 cols_to_dummy = [c for c in cat_cols_minus_useless if c != "hospital_death"]
-#ndf = pd.get_dummies(ndf , columns=cols_to_dummy , drop_first=True)
+ndf = pd.get_dummies(ndf , columns=cols_to_dummy , drop_first=True)
 
-encoders = [LabelEncoder() for c in cols_to_dummy]
+#encoders = [LabelEncoder() for c in cols_to_dummy]
 
-for i,x in enumerate(cols_to_dummy):
-    ndf[x] = encoders[i].fit_transform(ndf[x])
+#for i,x in enumerate(cols_to_dummy):
+#    ndf[x] = encoders[i].fit_transform(ndf[x])
 
 
 y = ndf[DEPENDENT_VARIABLE]
@@ -125,13 +125,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier , AdaBoostClassifier
 
 params = {
-  'colsample_bynode': 0.8,
-  'learning_rate': 1,
-  'max_depth': 5,
-  'num_parallel_tree': 100,
+  'colsample_bynode': 0.78,
+  'max_depth': 3,
+  'num_parallel_tree': 120,
   'objective': 'binary:logistic',
   'subsample': 0.8,
+  "scale_pos_weight":11,
+  "base_score":0.1,
 }
 
-cv_results = xgb.cv(dtrain=data_dmatrix, params=params, nfold=3,
-                    num_boost_round=50,early_stopping_rounds=10,metrics="auc", as_pandas=True, seed=123)
+cv_results = xgb.cv(dtrain=data_dmatrix, params=params, nfold=2,
+                    num_boost_round=10,early_stopping_rounds=5,metrics="auc", as_pandas=True, seed=123)
+
+cv_results
+
+model = xgb.XGBClassifier(nthreads=-1,**params)
+cross_val_score(model , X,y,cv=10)

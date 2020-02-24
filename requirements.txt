@@ -10,5 +10,4 @@ plotnine
 dask[complete]
 numba
 sklearn-deap
-pandoctools
 xgboost

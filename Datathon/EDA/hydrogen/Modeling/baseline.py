@@ -1,4 +1,5 @@
 from Datathon.Utils.getData import *
+from Datathon.Utils.getPreparedData import *
 
 from sklearn.preprocessing import StandardScaler
 
@@ -11,7 +12,7 @@ df = getTrainingData()
 DEPENDENT_VAR = getDependentVariable()
 DEPENDENT_VAR in df
 
-numericCols = [c for c in df.columns if ptypes.is_numeric_dtype(df[c])]
+numericCols = getNumericColumns()
 colsWithLargeMissingValues = df.loc[:,df.isna().sum() > df.shape[0] * 0.6]
 
 
@@ -24,26 +25,7 @@ colsWithLargeMissingValues = df.loc[:,df.isna().sum() > df.shape[0] * 0.6]
 # dfc = pd.read_csv("training_with_cluster.csv")
 # df["cluster"] = dfc["cluster"]
 
-def diffCols(df, numericCols):
-    for maxCol in numericCols:
-        if maxCol.find("max") > -1:
-            name = "_".join(maxCol.split("_")[1:-1])
-            minCol = [c for c in df.columns if c.find(name) > -1 and c.find("min") > -1][0]
-            diffCol = f"{name}_diff"
-            maxOutlier = f"{maxCol}_isoutlier"
-            minOutlier = f"{minCol}_isoutlier"
-            minMaxRatio = f"{name}_minMaxRatio"
-            meanCol = f"{name}_mean"
-            df[diffCol] = df[maxCol] - df[minCol]
-            #df[minMaxRatio] = df[maxCol] / df[minCol]
-            df[maxOutlier] = df[maxCol] > df[maxCol].mean() + df[maxCol].std()*3
-            df[minOutlier] = df[minCol] < df[minCol].mean() - df[maxCol].std()*3
-            df[meanCol] = (df[maxCol] + df[minCol])/2
-            df[maxOutlier] = df[maxOutlier].astype("category")
-            df[minOutlier] = df[minOutlier].astype("category")
 
-            #df = df.drop([maxCol , minCol],axis=1)
-            numericCols.append(diffCol)
             #numericCols = [c for c in numericCols if c not in [maxCol , minCol]]
 
 def getOutliersScore(df , numericCols):
@@ -93,7 +75,7 @@ def impute(series):
 
 df = df.apply(impute ,axis=0)
 
-diffCols(df , numericCols)
+df = diffCols(df , numericCols)
 df.shape
 
 df[DEPENDENT_VAR].isna().sum()

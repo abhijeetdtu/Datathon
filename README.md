@@ -1,4 +1,36 @@
-* How to Explore the repository
+### WIDS Hackathon 2020
+
+* **Last Sumission Model Summary**
+  - /Datathon/EDA/hydrogen/EDA/zoomFeatureImportance.py
+  - **ROC_AUC - .89768**
+  ### Pipeline >
+  - **Missing Values**
+    - num_mean = SimpleImputer(strategy="mean")
+    - cat_freq = SimpleImputer(strategy="most_frequent")
+  - **Add Apache Score column** - getAPACHEScore
+  - **Feature Transformations**
+   - rs = RobustScaler()
+   - pt = PowerTransformer()
+  - **Feature Reduction**
+    - fa = FeatureAgglomeration(n_clusters=None,affinity="precomputed",compute_full_tree=True, linkage="average" ,distance_threshold=1/corrcoefmin)
+  - **Categorical Columns**
+    - ohe = OneHotEncoder(sparse=False , handle_unknown='ignore')
+  - **Modelling**
+    - import lightgbm as lgb
+    - ```
+    params = {
+      'max_depth': 10,
+      'n_estimators ': 10,
+      'objective': 'binary',
+      'colsample_bytree': 0.8,
+      "class_weight":{0:1 , 1:20},
+      "base_score":0.2,
+      "n_jobs":-1,
+      "metric":"auc",
+      "reg_alpha":0.4,
+      "reg_lambda":0.18,
+    }
+    ```
 
 * Directory Structure
   * **/Datathon/**

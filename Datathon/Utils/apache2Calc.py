@@ -74,7 +74,7 @@ def calculate_single_scores (value, selector):
         if in_range(value_range[0], value_range[1], value):
             return int(value_range[2])
 
-    return int(10000)
+    return int(25)
 
 def calculate_apache2_physiology(abp,temperature,heart_bpm,respiratory_rate,oxygenation,ph,sodium,potassium,hematocrit,wbc,age):
     args = list(locals().values())

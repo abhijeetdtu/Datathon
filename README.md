@@ -17,7 +17,8 @@
     - ohe = OneHotEncoder(sparse=False , handle_unknown='ignore')
   - **Modelling**
     - import lightgbm as lgb
-    - ```
+    - 
+    ```
     params = {
       'max_depth': 10,
       'n_estimators ': 10,

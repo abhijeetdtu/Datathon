@@ -11,3 +11,4 @@ dask[complete]
 numba
 sklearn-deap
 xgboost
+mlxtend

@@ -45,21 +45,13 @@ DEPENDENT_VAR = getDependentVariable()
 catcols = getCategorialColumns(df)
 catcolsWoBogus = [c for c in catcols if c not in ["hospital_id" , "encounter_id" , "icu_id" , "patient_id"]]
 catcolsWoBogusWoTarget = [c for c in catcolsWoBogus if c != DEPENDENT_VAR]
-
 from sklearn.impute import SimpleImputer
-
 si = SimpleImputer(strategy="most_frequent")
 woTarget = df.drop([DEPENDENT_VAR] , axis=1)
 df.loc[:,woTarget.columns] = si.fit_transform(woTarget)
-
-
-
 ndf = pd.get_dummies(df , columns=catcolsWoBogusWoTarget , drop_first=True)
-
 ndf.shape
-
 from sklearn.ensemble import RandomForestClassifier
-
 rfc = RandomForestClassifier()
-
-rfc.fit(ndf.drop("") , df[DEPENDENT_VAR])
+from sklearn.model_selection import cross_val_score
+cross_val_score(rfc , ndf.drop(DEPENDENT_VAR,axis=1) , df[DEPENDENT_VAR] , scoring="roc_auc")

@@ -12,3 +12,8 @@ numba
 sklearn-deap
 xgboost
 mlxtend
+pyod
+keras
+tensorflow
+fancyimpute
+category_encoders

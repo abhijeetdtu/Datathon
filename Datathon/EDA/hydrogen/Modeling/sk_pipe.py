@@ -42,6 +42,7 @@ adf = getTrainingData()
 cols_useless =[ "encounter_id", "hospital_id","patient_id" , "icu_id" , "gender" , "ethnicity"]
 #adf = adf.drop(cols_useless,  axis=1)
 
+#adf[[c for c in adf if c.find("prob") > -1]]
 #cat_cols = [c for c in getCategorialColumns(adf) if c not in cols_useless + ["hospital_death"]]
 def tooManyMissing(adf):
     tdf = adf.dropna(thresh=adf.shape[0]*0.75 , axis=1)
@@ -53,9 +54,33 @@ cat_cols = [c for c in getCategorialColumns(adf) if c not in ["hospital_death"] 
 num_cols = [c for c in getNumericColumns(adf) if c not in tooManyMissing_cols]
 DEPENDENT_VARIABLE = getDependentVariable()
 
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.base import TransformerMixin
+
+# class binProbability():
+#
+#     def fit(self,X,y):
+#         pass
+#
+#     def transform(self,X,y):
+#         return np.where(X < 0.4 , -1, np.where(X < 0.6 , 0 , 1))
+
+def binProbability(X):
+    #return np.where(X < 0.4 , -1, np.where(X < 0.6 , 0 , 1))
+    return np.where(X < 0.45 , -1, np.where(X < 0.55 , 0 , 1))
+
 numeric_cols_pipe = Pipeline(steps=[
+    ('Bin probability' ,
+        ColumnTransformer([
+            ('Bin probability' ,FunctionTransformer(binProbability) ,[
+                #'apache_4a_icu_death_prob'
+                'apache_4a_hospital_death_prob'
+            ] )
+        ],remainder='passthrough')
+    ),
     ('mean impute' ,SimpleImputer(strategy="mean") )
     ,('Standard Scale' ,StandardScaler() )
+
 ])
 
 
@@ -93,7 +118,7 @@ trX.shape
 
 import lightgbm as lgb
 
-params ={'n_estimators':50000,
+params ={'n_estimators':500,
                     'boosting_type': 'gbdt',
                     'objective': 'binary',
                     'metric': 'auc',
@@ -120,9 +145,9 @@ train_sizes, train_scores, valid_scores = learning_curve(lgclf, trX, y,scoring="
 
 lcurveplotdf = pd.DataFrame({"train_size":train_sizes , "train_score" : train_scores[:,1] , "valid_score":valid_scores[:,1]})
 
-ggplot(lcurveplotdf ) + \
-    geom_line(aes(x="train_size" , y="train_score") , color="red") + \
-    geom_line(aes(x="train_size" , y="valid_score") , color="green")
+(ggplot(lcurveplotdf ) +
+    geom_line(aes(x="train_size" , y="train_score") , color="red") +
+    geom_line(aes(x="train_size" , y="valid_score") , color="green"))
 
 
 lgclf.fit(trX,y)

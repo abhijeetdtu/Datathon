@@ -88,4 +88,10 @@
       - pca.py (11)
         - This was an attempt at feature reduction using **PCA**
       - xgboost.py (12)
-        - This was an attempt to aaply **Xgboost** and search for the optimal hyper parameters
+        - This was an attempt to apply **Xgboost** and search for the optimal hyper parameters
+      - Final parameter tuning.py
+        - Removed features with more than 50% missing data and which can be explained using other variables
+        - Removed correlated features
+        - Used random forest for imputation   
+        - Used power transformer for normalization
+        - Applied **LightGBM** and search for the optimal hyper parameters  

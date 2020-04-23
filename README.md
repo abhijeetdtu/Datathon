@@ -3,6 +3,9 @@
 * **Last Sumission Model Summary**
   - /Datathon/EDA/hydrogen/EDA/zoomFeatureImportance.py
   - **ROC_AUC - .89768**
+  - /Datathon/EDA/hydrogen/EDA/Final parameter tuning.py
+  - **Kaggle score - .90150**
+  
   ### Pipeline >
   - **Missing Values**
     - num_mean = SimpleImputer(strategy="mean")

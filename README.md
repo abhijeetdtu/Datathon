@@ -118,3 +118,6 @@
           - This is an attempt to use **Sklearn pipeline** objects to stream line trying of different combinations of models, feature selection etc
         - StackedDeep.ipynb
           - This file includes code where we tried stacking **Sequential Model , SVM and a logistic classifier**
+        - GridSearch_Keras.ipynb 
+          - This file includes code where we implemented keras sequential modeling with Hyperparameter tuning.
+          

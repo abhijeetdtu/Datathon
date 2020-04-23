@@ -17,7 +17,7 @@
     - ohe = OneHotEncoder(sparse=False , handle_unknown='ignore')
   - **Modelling**
     - import lightgbm as lgb
-    - 
+    -
     ```
     params = {
       'max_depth': 10,
@@ -89,3 +89,23 @@
         - This was an attempt at feature reduction using **PCA**
       - xgboost.py (12)
         - This was an attempt to aaply **Xgboost** and search for the optimal hyper parameters
+
+    - **/EDA/hydrogen/Modelling**
+      - anomaly.py ,anomaly0.py  , anomaly00.py
+        - These files try outlier imputation strategy where using  KNN **outlier detection** algorithm
+          python```from pyod.models.knn import KNN```
+        - Idea was to group observations together based on if they were outlier or not and then impute within group observations
+      - bias_variance.py
+        - This file tries different feature selections and then explores **learning curves** to see if we have a bias problem or a variance problem
+      - feature_selection_sfs.py , feature_selection_sfs0.py
+        - This is an attempt to use **L-R feature selection** to select a subset of features.
+        - Problem with this was long running time and computational complexity.
+      - GenericFeatureSelection.ipynb
+        - This was an attempt at using Genetic Algorithm for feature selection using
+          python```from genetic_selection import GeneticSelectionCV```
+      - Keras_Classifier.ipynb
+        - this was an attempt at using **Keras Sequential Model**
+      - sk_pipe.py
+        - This is an attempt to use **Sklearn pipeline** objects to stream line trying of different combinations of models, feature selection etc
+      - StackedDeep.ipynb
+        - This file includes code where we tried stacking **Sequential Model , SVM and a logistic classifier**

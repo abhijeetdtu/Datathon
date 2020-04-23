@@ -65,9 +65,31 @@ from sklearn.base import TransformerMixin
 #     def transform(self,X,y):
 #         return np.where(X < 0.4 , -1, np.where(X < 0.6 , 0 , 1))
 
+def transformProbs(adf):
+    tempdf = adf.copy()
+
+    coli = [i for i,c in enumerate(tempdf.columns) if c == "apache_4a_hospital_death_prob"]
+    serie = tempdf.iloc[list(np.where(tempdf["hospital_death"] == 1))[0] , coli[0] ]
+    serie = serie.clip(lower=0.5 , upper=serie.max())
+
+    tempdf.iloc[list(np.where(tempdf["hospital_death"] == 1))[0] , coli[0] ] = serie
+
+    serie = tempdf.iloc[list(np.where(tempdf["hospital_death"] == 1))[0] , coli[0] ]
+    serie = serie.clip(lower=0 , upper=serie.mean())
+    tempdf.iloc[list(np.where(tempdf["hospital_death"] == 1))[0] , coli[0] ] = serie
+
+
+    tempdf.groupby("hospital_death").agg(mean_prob=("apache_4a_hospital_death_prob" , "mean"))
+
+    adf["apache_4a_hospital_death_prob"] = tempdf["apache_4a_hospital_death_prob"]
+    return adf
+
+#adf = transformProbs(adf)
+
 def binProbability(X):
     #return np.where(X < 0.4 , -1, np.where(X < 0.6 , 0 , 1))
-    return np.where(X < 0.45 , -1, np.where(X < 0.55 , 0 , 1))
+    #return np.where(X < 0.5 , -1, np.where(X < 0.55 , 0 , np.where(X < 0.8 , 1 , 2)))
+    return np.where(X < 0.6 , -1, np.where(X < 0.90 , 0 , 1))
 
 numeric_cols_pipe = Pipeline(steps=[
     ('Bin probability' ,
@@ -95,7 +117,7 @@ cat_cols_pipe = Pipeline(steps=[
 ])
 
 transform_pipe = Pipeline(steps=[
-     ('Column Transform' ,
+    ('Column Transform' ,
         ColumnTransformer([
             ('Drop Too Many Missing' , 'drop' , tooManyMissing_cols)
             ,('Cat Cols Pipe' ,cat_cols_pipe ,cat_cols )
@@ -114,6 +136,7 @@ trX = transform_pipe.fit_transform(X,y)
 
 #trX = RemoveOutliers().fit(trX).transform(trX)
 trX.shape
+
 
 
 import lightgbm as lgb
@@ -137,20 +160,27 @@ params ={'n_estimators':500,
 lgclf = lgb.LGBMClassifier(**params)
 
 
-from plotnine import *
-from sklearn.model_selection import learning_curve
-
-
-train_sizes, train_scores, valid_scores = learning_curve(lgclf, trX, y,scoring="roc_auc", train_sizes=np.linspace(0.1, 1.0, 10), cv=5)
-
-lcurveplotdf = pd.DataFrame({"train_size":train_sizes , "train_score" : train_scores[:,1] , "valid_score":valid_scores[:,1]})
-
-(ggplot(lcurveplotdf ) +
-    geom_line(aes(x="train_size" , y="train_score") , color="red") +
-    geom_line(aes(x="train_size" , y="valid_score") , color="green"))
+# from plotnine import *
+# from sklearn.model_selection import learning_curve
+#
+#
+# train_sizes, train_scores, valid_scores = learning_curve(lgclf, trX, y,scoring="roc_auc", train_sizes=np.linspace(0.1, 1.0, 10), cv=5)
+#
+# lcurveplotdf = pd.DataFrame({"train_size":train_sizes , "train_score" : train_scores[:,1] , "valid_score":valid_scores[:,1]})
+#
+# (ggplot(lcurveplotdf ) +
+#     geom_line(aes(x="train_size" , y="train_score") , color="red") +
+#     geom_line(aes(x="train_size" , y="valid_score") , color="green"))
 
 
 lgclf.fit(trX,y)
+
+preds = lgclf.predict(trX)
+
+from sklearn.metrics import confusion_matrix
+
+confusion_matrix(y, preds)
+
 testdf = getUnlabledData()
 
 Xtb = testdf.drop([DEPENDENT_VARIABLE] , axis=1)

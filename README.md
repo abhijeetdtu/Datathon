@@ -3,6 +3,9 @@
 * **Last Sumission Model Summary**
   - /Datathon/EDA/hydrogen/EDA/zoomFeatureImportance.py
   - **ROC_AUC - .89768**
+  - /Datathon/EDA/hydrogen/EDA/Final parameter tuning.py
+  - **Kaggle score - .90150**
+  
   ### Pipeline >
   - **Missing Values**
     - num_mean = SimpleImputer(strategy="mean")
@@ -115,3 +118,6 @@
           - This is an attempt to use **Sklearn pipeline** objects to stream line trying of different combinations of models, feature selection etc
         - StackedDeep.ipynb
           - This file includes code where we tried stacking **Sequential Model , SVM and a logistic classifier**
+        - GridSearch_Keras.ipynb 
+          - This file includes code where we implemented keras sequential modeling with Hyperparameter tuning.
+          
